@@ -1021,6 +1021,7 @@ namespace Reddit.Controllers
         /// <summary>
         /// Retrieve the user's comment history.
         /// </summary>
+        /// <param name="where">One of (overview, submitted, upvotes, downvoted, hidden, saved, gilded)</param>
         /// <param name="context">an integer between 2 and 10</param>
         /// <param name="t">one of (hour, day, week, month, year, all)</param>
         /// <param name="limit">the maximum number of items desired (default: 25, maximum: 100)</param>
@@ -1032,22 +1033,23 @@ namespace Reddit.Controllers
         /// <param name="srDetail">(optional) expand subreddits</param>
         /// <param name="count">a positive integer (default: 0)</param>
         /// <returns>A list of comments.</returns>
-        public List<Comment> GetCommentHistory(int context = 3, string t = "all", int limit = 25, string sort = "",
+        public List<Comment> GetCommentHistory(string where = "submitted", int context = 3, string t = "all", int limit = 25, string sort = "",
             string after = "", string before = "", bool includeCategories = false, string show = "all", bool srDetail = false,
             int count = 0)
         {
-            return GetCommentHistory(new UsersHistoryInput("comments", t, sort, context, after, before, count, limit, show, srDetail, includeCategories));
+            return GetCommentHistory(new UsersHistoryInput("comments", t, sort, context, after, before, count, limit, show, srDetail, includeCategories), where);
         }
 
         /// <summary>
         /// Retrieve the user's comment history.
         /// </summary>
         /// <param name="usersHistoryInput">A valid UsersHistoryInput instance</param>
+        /// <param name="where">One of (overview, submitted, upvotes, downvoted, hidden, saved, gilded)</param>
         /// <returns>A list of comments.</returns>
-        public List<Comment> GetCommentHistory(UsersHistoryInput usersHistoryInput)
+        public List<Comment> GetCommentHistory(UsersHistoryInput usersHistoryInput, string where)
         {
             CommentHistoryLastUpdated = DateTime.Now;
-            commentHistory = Lists.GetComments(Validate(Dispatch.Users.CommentHistory(Name, "comments", usersHistoryInput)), Dispatch);
+            commentHistory = Lists.GetComments(Validate(Dispatch.Users.CommentHistory(Name, where, usersHistoryInput)), Dispatch);
 
             return commentHistory;
         }
